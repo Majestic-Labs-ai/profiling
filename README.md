@@ -4,6 +4,7 @@ CLI for profiling using Nsight-Compute:
 
 export MODEL_REPO=meta-llama/Meta-Llama-3.1-8B
 export DEVICE=cuda
+huggingface-cli login
 
 #Option 1:
 ##running Nsight Compute for gpt-fast framework (You can choose your own kernel range using --launch-skip (start point) and --launch-count):
