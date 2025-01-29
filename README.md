@@ -1,9 +1,5 @@
-pip install vllm
+pip install -r requirements.txt
 
-pip install transformers
-
-pip install ncu
-pip install pandas
 pip install --upgrade --force-reinstall nvidia-cublas-cu12
 pip install --upgrade --force-reinstall nvidia-cudnn-cu12
 
