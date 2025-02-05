@@ -49,11 +49,11 @@ ncu --call-stack --replay-mode kernel --set roofline --launch-skip 100 --launch-
 
 ##running Nsight Compute for vllm framework:
 
-ncu --call-stack --set roofline --launch-skip 100 --launch-count 50 --replay-mode kernel -f -o ./test python vllm_test.py
+ncu --metrics smsp__sass_thread_inst_executed_op_hadd_pred_on.sum,smsp__sass_thread_inst_executed_op_hmul_pred_on.sum,smsp__sass_thread_inst_executed_op_hfma_pred_on.sum,smsp__sass_thread_inst_executed_op_fadd_pred_on.sum,smsp__sass_thread_inst_executed_op_fmul_pred_on.sum,smsp__sass_thread_inst_executed_op_ffma_pred_on.sum,smsp__sass_thread_inst_executed_op_fp8_hadd_pred_on.sum,smsp__sass_thread_inst_executed_op_fp8_hmul_pred_on.sum,smsp__sass_thread_inst_executed_op_fp8_hfma_pred_on.sum,gpu__time_duration --call-stack --launch-skip 0 --launch-count 4000 --replay-mode kernel -f --export smsp_timing python vllm_test.py
 
 #Importing .ncu-rep file to a raw .csv file:
 
-ncu --import file_name.ncu-rep --csv --section SpeedOfLight > raw_csv_output_path.csv
+ncu --import file_name.ncu-rep --csv > raw_data.csv
 
 #Generating a readable format .csv file:
 
@@ -61,6 +61,6 @@ python organize.py
 
 #Adding valuable metrics for utilization:
 
-python calc_metrics.py output_test_3.csv output_test_vllm_3.csv
+python calc_metrics.py output.csv output1.csv
 
 
