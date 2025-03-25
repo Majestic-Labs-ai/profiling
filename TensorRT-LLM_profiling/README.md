@@ -16,15 +16,15 @@ docker restart tensorrt_llm-release-Neta
 
 Running TRT-LLM benchmark:
       
-      1. Prepare the dataset:
+      # Prepare the dataset:
       
       python benchmarks/cpp/prepare_dataset.py --tokenizer=meta-llama/Llama-3.1-8B-Instruct --stdout token-norm-dist --num-requests=30000 --input-mean=128 --output-mean=128 --input-stdev=0 --output-stdev=0 > 128_128.json 
       
-      2. Build the Engine:
+      # Build the Engine:
       
       trtllm-bench --model meta-llama/Llama-3.1-8B-Instruct build --tp_size 1 --pp_size 1 --quantization FP8 --dataset 128_128.json 
       
-      3. Run the Engine:
+      # Run the Engine:
       
       trtllm-bench --model meta-llama/Llama-3.1-8B-Instruct throughput --dataset 128_128.json --engine_dir /tmp/meta-llama/Llama-3.1-8B-Instruct/tp_1_pp_1 
 
