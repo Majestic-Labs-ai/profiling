@@ -39,10 +39,10 @@ Running TRT-LLM Inference (Llama-3.1-8B):
       
       python3 convert_checkpoint.py --model_dir Meta-Llama-3.1-8B-Instruct --output_dir llama-3.1-8b-ckpt
       
-      2. uild Engine:
+      2. Build Engine:
       
       trtllm-build --checkpoint_dir llama-3.1-8b-ckpt \
-          --gemm_plugin float16 \
+          --gemm_plugin bfloat16 \
           --output_dir ./llama-3.1-8b-engine
       
       3. Run Inference:
