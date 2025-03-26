@@ -84,7 +84,7 @@ outputs = self.session.decode(
 )
 nvtx.range_pop()
 
-cd /app/tensorrt_llm/exmaples/llama/
+cd /app/tensorrt_llm/examples/llama/
 
 run:
 
