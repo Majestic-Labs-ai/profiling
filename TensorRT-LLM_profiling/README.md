@@ -49,48 +49,45 @@ Running TRT-LLM Inference (Llama-3.1-8B):
       
       python3 ../run.py --engine_dir ./llama-3.1-8b-engine  --max_output_len 100 --tokenizer_dir Meta-Llama-3.1-8B-Instruct --input_text "How do I count to nine in French?"
 
-Runnning NCU Profiling (TRT-LLM INference):
+*Runnning NCU Profiling (TRT-LLM INference):*
 
-cd /usr/local/lib/python3.12/dist-packages/tensorrt_llm/runtime/
+vim /usr/local/lib/python3.12/dist-packages/tensorrt_llm/runtime/model_runner.py
 
-vim model_runner.py
+*Add imports:* 
 
-Add imports: 
+      import torch
 
-import torch
-import torch.cuda.nvtx as nvtx
+      import torch.cuda.nvtx as nvtx
 
-Add NVTX markers for profiling generation (decode):
+*Add NVTX markers for profiling generation (decode):*
 
-print("===================Generate.decode was called!======================")
-nvtx.range_push("Generate.decode START")
-outputs = self.session.decode(
-    batch_input_ids,
-    input_lengths,
-    sampling_config,
-    stop_words_list=sampling_config.stop_words_list,
-    bad_words_list=sampling_config.bad_words_list,
-    output_sequence_lengths=sampling_config.output_sequence_lengths,
-    output_generation_logits=output_generation_logits,
-    return_dict=sampling_config.return_dict,
-    streaming=streaming,
-    stopping_criteria=stopping_criteria,
-    logits_processor=logits_processor,
-    position_ids=position_ids,
-    encoder_output=encoder_input_features,
-    encoder_input_lengths=encoder_output_lengths,
-    cross_attention_mask=cross_attention_masks,
-    **other_kwargs
-)
-nvtx.range_pop()
+      print("===================Generate.decode was called!======================")
+      nvtx.range_push("Generate.decode START")
+      outputs = self.session.decode(
+          batch_input_ids,
+          input_lengths,
+          sampling_config,
+          stop_words_list=sampling_config.stop_words_list,
+          bad_words_list=sampling_config.bad_words_list,
+          output_sequence_lengths=sampling_config.output_sequence_lengths,
+          output_generation_logits=output_generation_logits,
+          return_dict=sampling_config.return_dict,
+          streaming=streaming,
+          stopping_criteria=stopping_criteria,
+          logits_processor=logits_processor,
+          position_ids=position_ids,
+          encoder_output=encoder_input_features,
+          encoder_input_lengths=encoder_output_lengths,
+          cross_attention_mask=cross_attention_masks,
+          **other_kwargs
+      )
+      nvtx.range_pop()
 
-cd /app/tensorrt_llm/examples/llama/
+*run:*
 
-run:
+      ncu --target-processes all --set full --export trtllm_decode_profile python3 ../run.py --engine_dir ./llama-3.1-8b-engine --max_output_len 100 --tokenizer_dir Meta-Llama-3.1-8B-Instruct --input_text "How do I count to nine in French?" --use_py_session
 
-ncu --target-processes all --set full --export trtllm_decode_profile python3 ../run.py --engine_dir ./llama-3.1-8b-engine --max_output_len 100 --tokenizer_dir Meta-Llama-3.1-8B-Instruct --input_text "How do I count to nine in French?" --use_py_session
-
-You should see:
+*You should see:*
 
 ==PROF== Connected to process 2671 (/usr/bin/python3.12)
 [TensorRT-LLM] TensorRT-LLM version: 0.18.0.dev2025020400
@@ -164,3 +161,16 @@ You should see:
 /usr/local/lib/python3.12/dist-packages/torch/nested/__init__.py:228: UserWarning: The PyTorch API of nested tensors is in prototype stage and will change in the near future. (Triggered internally at /opt/pytorch/pytorch/aten/src/ATen/NestedTensorImpl.cpp:178.)
   return _nested.nested_tensor(
 ==PROF== Profiling "vectorized_elementwise_kernel" - 10: 0%....50%....100% - 39 passes
+
+
+*Running Nsight Systems profiling:*
+
+      nsys profile \
+      --trace=cuda,nvtx,osrt,cudnn,cublas \
+      --output=trtllm_decode_profile \
+      python3 ../run.py \
+      --engine_dir ./llama-3.1-8b-engine \
+      --max_output_len 10 \
+      --tokenizer_dir Meta-Llama-3.1-8B-Instruct \
+      --input_text "How do I count to nine in French?" \
+      --use_py_session
